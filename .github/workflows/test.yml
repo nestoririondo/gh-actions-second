@@ -4,17 +4,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs:
-      NODE_VERSION: ${{ steps.set-node-version.outputs.NODE_VERSION }}
+      NODE_VERSION: ${{ steps.nvm.outputs.NODE_VERSION }}
     steps:
       - name: Get the code
         uses: actions/checkout@v4.1.7
-      - name: Set NodeJS version to latest LTS
-        id: set-node-version
-        run: echo "::set-output name=NODE_VERSION::$(nvm install 'lts/*' --reinstall-packages-from=default --latest-npm)"
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
       - name: Install NodeJS
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ steps.set-node-version.outputs.NODE_VERSION }}
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Install dependencies
         run: npm ci #Installs only packages from package-lock.json
       - name: Run tests
