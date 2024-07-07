@@ -1,5 +1,5 @@
-name: Test the project
-on: push
+name: Test and deploy the project
+on: [push, workflow_dispatch] #workflow_dispatch allows to run the workflow manually
 jobs:
   test:
     runs-on: ubuntu-latest
