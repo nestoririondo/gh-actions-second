@@ -1,16 +1,37 @@
 name: Test the project
 on: push
-jobs: 
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Get the code
-              uses: actions/checkout@v4.1.7
-            - name: Install NodeJS
-              uses: actions/setup-node@v3
-              with:
-                node-version: 18
-            - name: Install dependencies
-              run: npm ci #Installs only packages from package-lock.json
-            - name: Run tests
-              run: npm test
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      NODE_VERSION: ${{ steps.set-node-version.outputs.NODE_VERSION }}
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4.1.7
+      - name: Set NodeJS version to latest LTS
+        id: set-node-version
+        run: echo "::set-output name=NODE_VERSION::$(nvm install 'lts/*' --reinstall-packages-from=default --latest-npm)"
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.set-node-version.outputs.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm ci #Installs only packages from package-lock.json
+      - name: Run tests
+        run: npm test
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4.1.7
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.test.outputs.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm ci #Installs only packages from package-lock.json
+      - name: Build the project
+        run: npm run build
+      - name: Deploy the project
+        run: echo "Deploying the project..."
