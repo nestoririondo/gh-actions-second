@@ -10,7 +10,6 @@ jobs:
     steps:
       - name: Get the code
         uses: actions/checkout@v4.1.7
-      - run: echo "${{ env.NODE_VERSION }}"
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
@@ -35,3 +34,4 @@ jobs:
         run: npm run build
       - name: Deploy the project
         run: echo "Deploying the project..."
+        
